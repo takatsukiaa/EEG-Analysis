@@ -2,7 +2,7 @@ clc; clearvars; close all;
 
 % 1. 讀取剛才生成的 txt 檔案
 % 請確保檔名與您產生的檔案名稱一致
-filename = 'No.2 coherence_segment2.txt';
+filename = 'Results/No.1 coherence_segment3_post.txt';
 T = readtable(filename, 'Delimiter', '\t');
 
 % 2. 抓取所有不重複的通道名稱，以建立矩陣的維度

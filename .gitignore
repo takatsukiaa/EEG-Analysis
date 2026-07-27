@@ -4,3 +4,10 @@
 *.xlsx
 *.docx
 *.pdf
+.venv
+/Coherence_Results_Images
+/PLV_topoplot
+/PLV_Results_Images
+/Longitudinal PLV
+/Phase-Locking-Value---Modulation-Index-master
+/Yeh_PSDandSpectrogram
