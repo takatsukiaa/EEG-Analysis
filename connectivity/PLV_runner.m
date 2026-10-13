@@ -1,3 +1,27 @@
+%% PLV_runner compatibility wrapper
+% The original exploratory sections are preserved below. By default this
+% script now uses the same validated backend as PhaseConnectivityApp. Set
+% PLV_USE_LEGACY_SCRIPT=true before running to execute the preserved code.
+if ~exist('PLV_USE_LEGACY_SCRIPT', 'var') || ~PLV_USE_LEGACY_SCRIPT
+    clc; close all;
+    script_dir = fileparts(mfilename('fullpath'));
+    input_file = fullfile(script_dir, 'Raw_Data', 'No2.edf');
+    recording = load_phase_connectivity_recording(input_file);
+    options = struct('start_time_sec', 1964, 'end_time_sec', 1965, ...
+        'channel_names', {recording.channel_names}, ...
+        'window_length_sec', 0.2, 'window_step_sec', 0.1, ...
+        'filter_settings', struct('bandpass_enabled', true, ...
+        'band_hz', [35 45], 'bandpass_order', 20, 'notch_hz', 0));
+    connectivity_results = run_phase_connectivity_analysis(recording, options);
+    plv_matrix = connectivity_results.plv_matrix;
+    plv_3d_matrix = connectivity_results.plv_3d_matrix;
+    t_axis = connectivity_results.time_axis;
+    channel_names = connectivity_results.channel_names;
+    fprintf('PLV compatibility run complete: %d channels, %d windows.\n', ...
+        numel(channel_names), numel(t_axis));
+    return;
+end
+
 clc;clearvars;close all;
 
 filename = 'Raw_Data/No2.edf';
@@ -80,8 +104,8 @@ plot = 0;
 % phase_matrix = get_hilbert(filtered_eeg);
 % 
 % plv_matrix = get_section_PLV(phase_matrix);
-% win_len = 0.5; % 1000 ms
-% win_step = 0.1; % 500 ms
+% win_len = 0.2; % 500 ms
+% win_step = 0.1; % 100 ms
 % fprintf('正在計算滑動視窗 PLV...\n');
 % [plv_3d_matrix, t_axis] = get_sliding_PLV(filtered_eeg, Fs, win_len, win_step);
 

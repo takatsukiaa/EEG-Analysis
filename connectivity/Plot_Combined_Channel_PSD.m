@@ -7,7 +7,7 @@ clearvars -except filePath channelNames channelName channelIndex ...
     frequencyRangeHz spectrogramWindowSec ...
     spectrogramOverlapFraction nfft minMaxNormalizeSpectrum ...
     showPowerDb timeTickFormat outputFolder outputResolutionDpi ...
-    outputImageFormat showFigures closeFiguresAfterSave;
+    outputImageFormat showFigures closeFiguresAfterSave EEG;
 close all;
 
 %% User settings
@@ -15,16 +15,16 @@ if ~exist('filePath', 'var')
     filePath = "";              % Example: "Raw_Data/No2.mat"; leave empty to choose a file
 end
 if ~exist('channelNames', 'var')
-    channelNames = {"C4" "F8" "P4" "T4" "Pz"};
+    channelNames = {"Fp1" "Fp2" "Fz" "F7" "F3" "F4" "F8" "T3" "C3" "Cz" "C4" "T4" "T5" "P3" "Pz" "P4" "T6" "O1" "O2"};
 end
 if ~exist('startTimeSec', 'var')
-    startTimeSec = 26441;
+    startTimeSec = 21881;
 end
 if ~exist('endTimeSec', 'var')
-    endTimeSec = 26446;
+    endTimeSec = 21886;
 end
 if ~exist('timePointSec', 'var')
-    timePointSec = 26443.5;          % Example: 100; [] uses startTimeSec/endTimeSec instead
+    timePointSec = [];          % Example: 100; [] uses startTimeSec/endTimeSec instead
 end
 if ~exist('secondsBefore', 'var')
     secondsBefore = 2.5;
@@ -58,7 +58,7 @@ if ~exist('highlightLineColor', 'var')
     highlightLineColor = [0.85 0.45 0.00];
 end
 if ~exist('outputFolder', 'var')
-    outputFolder = fullfile(pwd, 'Yeh_PSDandSpectrogram/2大/26441/');
+    outputFolder = fullfile(pwd, 'Yeh_PSDandSpectrogram/2大/26441.5/');
 end
 if ~exist('outputResolutionDpi', 'var')
     outputResolutionDpi = 200;
@@ -158,59 +158,56 @@ window = hamming(windowLengthSamples, 'periodic');
 segmentForPsd = segment - mean(segment, 1, 'omitnan');
 [psdMatrix, freqAxis] = pwelch(segmentForPsd, window, overlapSamples, nfft, Fs);
 
-if plotInDb
-    psdMatrix = 10 * log10(psdMatrix);
-end
 
 %% Plot combined PSD
-if ~exist(outputFolder, 'dir')
-    mkdir(outputFolder);
-end
-
-if showFigures
-    figureVisibility = 'on';
-else
-    figureVisibility = 'off';
-end
-
-fig = figure('Color', 'w', 'Visible', figureVisibility, 'Position', [100 100 520 410]);
-ax = axes('Parent', fig);
-hold(ax, 'on');
-
-colors = lines(size(psdMatrix, 2));
-markers = {'o','d','s','^','v','>','<','p','h','x','+'};
-markerEveryNSamples = max(1, floor(numel(freqAxis) / 25));
-
-for ch = 1:size(psdMatrix, 2)
-    marker = markers{mod(ch - 1, numel(markers)) + 1};
-    plot(ax, freqAxis, psdMatrix(:, ch), ...
-        'Color', colors(ch, :), ...
-        'LineWidth', 1.4, ...
-        'Marker', marker, ...
-        'MarkerSize', 4.5, ...
-        'MarkerIndices', 1:markerEveryNSamples:numel(freqAxis));
-end
-
-xlim(ax, frequencyRangeHz);
-addFrequencyHighlight(ax, highlightFrequencyRangeHz, ...
-    highlightBandColor, highlightBandAlpha, highlightLineColor);
-grid(ax, 'off');
-box(ax, 'off');
-xlabel(ax, 'Frequency (Hz)', 'FontWeight', 'bold');
-
-if plotInDb
-    ylabel(ax, 'PSD (dB/Hz)', 'FontWeight', 'bold');
-else
-    ylabel(ax, 'PSD (\muV^2/Hz)', 'FontWeight', 'bold');
-end
-
-legend(ax, labels, 'Interpreter', 'none', 'Location', 'northeastoutside');
-title(ax, sprintf('Combined PSD: %.2f to %.2f sec', actualStartTimeSec, actualEndTimeSec), ...
-    'Interpreter', 'none');
-set(ax, 'FontSize', 12, 'LineWidth', 1.2);
+% if ~exist(outputFolder, 'dir')
+%     mkdir(outputFolder);
+% end
+% 
+% if showFigures
+%     figureVisibility = 'on';
+% else
+%     figureVisibility = 'off';
+% end
+% 
+% fig = figure('Color', 'w', 'Visible', figureVisibility, 'Position', [100 100 520 410]);
+% ax = axes('Parent', fig);
+% hold(ax, 'on');
+% 
+% colors = lines(size(psdMatrix, 2));
+% markers = {'o','d','s','^','v','>','<','p','h','x','+'};
+% markerEveryNSamples = max(1, floor(numel(freqAxis) / 25));
+% 
+% for ch = 1:size(psdMatrix, 2)
+%     marker = markers{mod(ch - 1, numel(markers)) + 1};
+%     plot(ax, freqAxis, psdMatrix(:, ch), ...
+%         'Color', colors(ch, :), ...
+%         'LineWidth', 1.4, ...
+%         'Marker', marker, ...
+%         'MarkerSize', 4.5, ...
+%         'MarkerIndices', 1:markerEveryNSamples:numel(freqAxis));
+% end
+% 
+% xlim(ax, frequencyRangeHz);
+% addFrequencyHighlight(ax, highlightFrequencyRangeHz, ...
+%     highlightBandColor, highlightBandAlpha, highlightLineColor);
+% grid(ax, 'off');
+% box(ax, 'off');
+% xlabel(ax, 'Frequency (Hz)', 'FontWeight', 'bold');
+% 
+% if plotInDb
+%     ylabel(ax, 'PSD (dB/Hz)', 'FontWeight', 'bold');
+% else
+%     ylabel(ax, 'PSD (\muV^2/Hz)', 'FontWeight', 'bold');
+% end
+% 
+% legend(ax, labels, 'Interpreter', 'none', 'Location', 'northeastoutside');
+% title(ax, sprintf('Combined PSD: %.2f to %.2f sec', actualStartTimeSec, actualEndTimeSec), ...
+%     'Interpreter', 'none');
+% set(ax, 'FontSize', 12, 'LineWidth', 1.2);
 
 outputFilePath = buildOutputFilePath(filePath, 'Combined', 'PSD', outputFolder, outputImageFormat);
-exportgraphics(fig, outputFilePath, 'Resolution', outputResolutionDpi);
+% exportgraphics(fig, outputFilePath, 'Resolution', outputResolutionDpi);
 
 %% Optional output in the base workspace
 CombinedPSD_Result = struct();
@@ -227,11 +224,13 @@ CombinedPSD_Result.startTimeSec = actualStartTimeSec;
 CombinedPSD_Result.endTimeSec = actualEndTimeSec;
 CombinedPSD_Result.frequency = freqAxis;
 CombinedPSD_Result.psd = psdMatrix;
+CombinedPSD_Result.plotInDb = plotInDb;
+CombinedPSD_Result.segment = segment;
 assignin('base', 'CombinedPSD_Result', CombinedPSD_Result);
 
-if closeFiguresAfterSave
-    close(fig);
-end
+% if closeFiguresAfterSave
+%     close(fig);
+% end
 
 %% Local functions
 function [data, Fs, labels, dataStartTimeSec, recordDurationSec] = loadEegFileForPsd(filePath, requestedLabels, requestedStartTimeSec, requestedEndTimeSec)
